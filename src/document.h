@@ -853,6 +853,14 @@ struct Document {
                 wxMessageBox(_(L"Error exporting file!"), fn.wx_str(), wxOK, sys->frame);
                 return _(L"Error writing to file!");
             }
+
+            // FB UPDATE 5/17/2024: Make sure image cache is up to date before exporting,
+            // this is to make sure all image file names are in the cache
+            loopv(image, sys->frame->idd->as) 
+            { 
+                sys->CacheImage(sys->frame->idd->as[image], 1.0);
+            }
+
             wxTextOutputStream dos(fos);
             wxString content = root->ToText(0, Selection(), k, this, true);
             switch (k) {

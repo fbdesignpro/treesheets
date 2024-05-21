@@ -231,6 +231,17 @@ struct Cell {
                 str.Prepend(wxString() << -text.relsize);
                 str.Prepend(L" relsize=\"");
             }
+
+            // FB UPDATE 5/21/2024: Added image attribute to cell tag
+            if (text.image) {
+                wxString imageName = sys->GetImageName(text.image);
+                if (!imageName.IsEmpty()) {
+                    str.Prepend(L"\"");
+                    str.Prepend(imageName);
+                    str.Prepend(L" image=\"");
+                }
+            }
+
             if (parent ? text.stylebits ^ parent->text.stylebits : text.stylebits) {
                 str.Prepend(L"\"");
                 str.Prepend(wxString() << text.stylebits);

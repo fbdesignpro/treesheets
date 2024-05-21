@@ -611,4 +611,27 @@ struct System {
     }
 
     void ImageDraw(wxBitmap *bm, wxDC &dc, int x, int y) { dc.DrawBitmap(*bm, x, y); }
+
+    // FB UPDATE 5/17/2024: Added explicit caching function and a map to store image names
+    std::map<int, wxString> imageNames;
+    void CacheImage(const wxString &fn, double sc) {
+        wxImage im;
+        if (!im.LoadFile(fn)) return;
+        vector<uint8_t> idv = ConvertWxImageToBuffer(im, wxBITMAP_TYPE_PNG);
+        int i = AddImageToList(sc, std::move(idv), 'I');
+        // Only keep the base file name with no path or no extension
+        wxFileName wfn(fn);
+        imageNames[i] = wfn.GetName();
+    }
+    wxString GetImageName(Image *img) {
+        int foundIndex = -1;
+        loopv(i, imagelist) {
+            if (imagelist[i]->hash == img->hash) { 
+                foundIndex = i;
+                break;
+            }
+        }
+        if (foundIndex == -1) return L"";
+        return imageNames[foundIndex];
+    }
 };
